@@ -1,6 +1,5 @@
 %consult('C:/Users/SHAITA/Documents/Github/Chicago-stock-ecxhange/chicago_stex.pl').
 
-
 % -------------------------------- DEBUT PREDICAT GENERALE -------------------------------------%
 % permet d'afficher une liste
 afficher_sous_liste([H|[]]):-write(H),nl.
@@ -33,8 +32,18 @@ affecter_liste(L,L).
 
 % modulo(4,10,Z).
 % Predicat MODULO (permet de pas avoir une positionTrader superieur a 9)
-modulo(X,Y,Z):-Z is X mod Y. 
+modulo(X,Y,Z):-Z is X mod Y.
+ 
+ % Predicat longueur : permet de connaitre le nombre d'element d'une liste
+ longueur([[_,vide]|Q],N):-longueur(Q,N).
+ longueur([_|Q],N):-longueur(Q,N1),N is N1+1.
+ longueur([],0).
 
+ % Predicat supprimer element : permet de supprimer un element d'une liste
+ supprimer_element([T|Q],PositionDebut,PositionX,[T|Q1]):-PositionDebut<PositionX,Position1 is PositionDebut+1,supprimer_element(Q,Position1,PositionX,Q1).
+ supprimer_element([_|Q],PositionDebut,PositionX,Q):-PositionDebut>=PositionX.
+ 
+ 
 % -------------------------------- FIN PREDICAT GENERALE -------------------------------------%
 
 % -------------------------------- PREDICAT BOURSE -------------------------------------------%
@@ -43,7 +52,7 @@ modulo(X,Y,Z):-Z is X mod Y.
 bourse([[ble,7],[riz,6],[cacao,6],[cafe,6],[sucre,6],[mais,6]]).
 
 % affichage de la bourse 
-afficher_bourse(_):-bourse([T|Q]),afficher_liste([T|Q]).
+afficher_bourse([T|Q]):-afficher_liste([T|Q]).
 
 % -------------------------------- FIN PREDICAT BOURSE -------------------------------------------%
 
@@ -77,18 +86,16 @@ tas(I,K,TasIncrementer,TasResultat):-I>K,affecter_liste(TasResultat,TasIncrement
 marchandise(J,K,MarchandiseIncrementer,MarchandiseResultat):-J=<K,tas(1,4,[],Tas),K1 is K-J,ajouter_element(K1,Tas,LTas),ajouter_element(LTas,MarchandiseIncrementer,LRes),J1 is J+1,marchandise(J1,K,LRes,MarchandiseResultat).
 marchandise(J,K,MarchandiseIncrementer,MarchandiseResultat):-J>K,affecter_liste(MarchandiseResultat,MarchandiseIncrementer).
 
-% afficher_tas(1,9,[]).
-% Algorithme afficher_tas = Algorithme Marchandise sauf qu on affiche seulement les marchandises et on ne les recuperer pas
-afficher_tas(J,K,LTas):-J=<K,tas(1,4,[],Tas),K1 is K-J,ajouter_element(K1,Tas,Tas2),ajouter_element(Tas2,LTas,LResultat),J1 is J+1,afficher_tas(J1,K,LResultat).
-afficher_tas(J,K,LTas):-J>K,afficher_liste(LTas).
+
+afficher_tas([T|Q]):-afficher_liste([T|Q]).
 
 % -------------------------------- FIN PREDICAT MARCHANDISE -------------------------------------------%
 
 % -------------------------------- PREDICAT TRADER -------------------------------------------%
 
 % initialisation du trader
-trader(X):- random(1,9,X).
-afficher_trader(_):-trader(X),write(X).
+trader(X):- random(0,9,X).
+afficher_trader(X):-write(X).
 
 % -------------------------------- FIN PREDICAT TRADER -------------------------------------------%
 
@@ -97,7 +104,9 @@ afficher_trader(_):-trader(X),write(X).
 reserve_joueur1([]).
 reserve_joueur2([]).
 afficher_joueur1([]):-write('La reserve du joueur 1 est vide').
+afficher_joueur1([T|Q]):-afficher_sous_liste([T|Q]).
 afficher_joueur2([]):-write('La reserve du joueur 2 est vide').
+afficher_joueur2([T|Q]):-afficher_sous_liste([T|Q]).
 
 % -------------------------------- FIN PREDICAT RESERVE JOUEUR -------------------------------------------%
 
@@ -112,7 +121,7 @@ afficher_joueur2([]):-write('La reserve du joueur 2 est vide').
 % On initialise RJ1 avec reserve_joueur1
 % On initialise RJ2 avec reserve_joueur2
 
-plateau([Marchandise, Bourse, PositionTrader, RJ1, RJ2]):-trader(PositionTrader),marchandise(1,9,[],Marchandise),bourse(Bourse),reserve_joueur1(RJ1),reserve_joueur2(RJ2).
+plateau_depart([Marchandise, Bourse, PositionTrader, RJ1, RJ2]):-trader(PositionTrader),marchandise(1,9,[],Marchandise),bourse(Bourse),reserve_joueur1(RJ1),reserve_joueur2(RJ2).
 
 % -------------------------------- FIN PREDICAT PLATEAU -------------------------------------------%
 
@@ -121,21 +130,21 @@ plateau([Marchandise, Bourse, PositionTrader, RJ1, RJ2]):-trader(PositionTrader)
 % Algorithme plateau_depart
 % Algorithme qui affiche les differents parametres du plateau.
 
-plateau_depart(_):-
+afficher_plateau([Marchandise, Bourse, PositionTrader, RJ1, RJ2]):-
 	write('La reserve du joueur 1: '),nl,
-	afficher_joueur1([]),nl,
+	afficher_joueur1(RJ1),nl,
 	write('***************************'),nl,
 	write('La reserve du joueur 2: '),nl,
-	afficher_joueur2([]),nl,
+	afficher_joueur2(RJ2),nl,
 	write('***************************'),nl,
 	write('Le tas est :'),nl,
-	afficher_tas(1,9,[]),
+	afficher_tas(Marchandise),
 	write('***************************'),nl,
 	write('La bourse actuel est :'),nl,
-	afficher_bourse(_),nl,
+	afficher_bourse(Bourse),
 	write('***************************'),nl,
 	write('Le trader est a la position :'),nl,
-	afficher_trader(_).
+	afficher_trader(PositionTrader),nl.
 	
 % -------------------------------- FIN PREDICAT PLATEAU DEPART -------------------------------------------%
 
@@ -143,20 +152,52 @@ plateau_depart(_):-
 
 % Liste Marchandise : [[0,ble,riz,ble,riz],[1,ble,sucre,riz,cacao],[2,ble,cafe,ble,cacao],[3,riz,sucre,cafe,sucre],[4,ble,cafe,ble,cacao],[5,sucre,ble,sucre,cacao],[6,riz,ble,riz,cafe],[7,riz,sucre,riz,cafe],[8,sucre,ble,riz,ble]]
 
-% parcourir_marchandise(listeMarchandises,0,Position,Marchandise).
+% parcourir_marchandise_sautantvide(listeMarchandises,0,PositionXdeb,PositionX,listeMarchandises,tas).
 % Algorithme parcourir_marchandise : permet de recuperer le tas correspondant la positionX
-% Paramètre : [_|Q] : represente la liste des marchandises, PositionDebut correspond a la premiere positions des tas (i.e : 1),PositionX la position de la marchandise a retrouver, Tas le tas a recuperer
-% Boucle de PositionDebut (=0) a PositionX (=3) par exemple. 
-% Une fois arrive a PositionX, On recupere le tas correspondant a la position X 
+% Paramètre : [_|Q] : represente la liste des marchandises, PositionXdeb est la position du trader avant le deplacement,
+% PositionX est la position du Trader apres le deplecement, Tas le tas a recuperer a la position du nouveau Trader
 
-parcourir_marchandise([_|Q],PositionDebut,PositionX,Tas):-PositionDebut<PositionX,Position1 is PositionDebut+1,parcourir_marchandise(Q,Position1,PositionX,Tas).
-parcourir_marchandise([T|_],PositionDebut,PositionX,Tas):-PositionDebut>=PositionX,affecter_liste(Tas,T).
+parcourir_marchandise_sautantvide([T|Q],PositionDebut,PositionXdeb,PositionX,Marchandise,Tas):-PositionDebut>=PositionXdeb,parcourir_marchandise_sautantvide2([T|Q],PositionXdeb,PositionX,Marchandise,Tas).
+parcourir_marchandise_sautantvide([_|Q],PositionDebut,PositionXdeb,PositionX,Marchandise,Tas):-PositionDebut<PositionXdeb,Position1 is PositionDebut+1,parcourir_marchandise_sautantvide(Q,Position1,PositionXdeb,PositionX,Marchandise,Tas).
+
+parcourir_marchandise_sautantvide2([[_,vide]|Q],PositionXdeb,PositionX,Marchandise,Tas):-parcourir_marchandise_sautantvide2(Q,PositionXdeb,PositionX,Marchandise,Tas).
+parcourir_marchandise_sautantvide2([_|Q],PositionXdeb,PositionX,Marchandise,Tas):-PositionXdeb<PositionX, Position1 is PositionXdeb+1,parcourir_marchandise_sautantvide2(Q,Position1,PositionX,Marchandise,Tas).
+parcourir_marchandise_sautantvide2([T|_],PositionXdeb,PositionX,_,Tas):-PositionXdeb>=PositionX,affecter_liste(Tas,T).
+parcourir_marchandise_sautantvide2([],PositionXdeb,PositionX,Marchandise,Tas):-parcourir_marchandise_sautantvide2(Marchandise,PositionXdeb,PositionX,Marchandise,Tas).
+
+
+%parcourir_marchandise([_|Q],PositionDebut,PositionX,Tas):-PositionDebut<PositionX,Position1 is PositionDebut+1,parcourir_marchandise(Q,Position1,PositionX,Tas).%
+%parcourir_marchandise([T|_],PositionDebut,PositionX,Tas):-PositionDebut>=PositionX,affecter_liste(Tas,T).
 
 % -------------------------------- FIN PREDICAT PARCOURIR MARCHANDISE -------------------------------------------%
 
-% -------------------------------- PREDICAT COUP_POSSIBLE -------------------------------------------%
+% ------------------------------- PREDICAT SUPPRIMER MARCHANDISE --------------------------------- %
 
-coup([j1,1,sucre,riz]).
+% Algorithme supprimer_marchandise :
+% Paramètre : Liste dess Tas ([T|Q]), PositionDebut (=0), PositionX (Tas dans lequel on veut supprimer un element), Liste Resultat avec la marchandise supprimer ([T|Q1])
+% On boucle de PositionDebut a Position X|
+% On rapelle a chaque fois supprimer_marchandise avec la suite des tas
+% Lorsque la boucle est terminé, on affecte le reste des marchandise Q et on supprime la premiere marchandise 
+% En remontant, on recupere les tas parcourus
+
+
+supprimer_marchandise([T|Q],PositionDebut,PositionX,[T|Q1]):-PositionDebut<PositionX,Position1 is PositionDebut+1,supprimer_marchandise(Q,Position1,PositionX,Q1).
+supprimer_marchandise([[T,_]|Q],PositionDebut,PositionX,[[T,vide]|Q]):-PositionDebut>=PositionX.
+supprimer_marchandise([[T|[_|Q2]]|Q],PositionDebut,PositionX,[[T|Q2]|Q]):-PositionDebut>=PositionX.
+
+
+
+% ------------------------------- FIN PREDICAT SUPPRIMER MARCHANDISE --------------------------------- %
+
+% ------------------------------- PREDICAT DECREMENTER BOURSE --------------------------------- %
+
+
+decrementer_bourse(Marchandise,[[Marchandise,Nombre]|Q],[[Marchandise,Nombre1]|Q]):-Nombre1 is Nombre-1.
+decrementer_bourse(Marchandise,[[T,Nombre]|Q],[[T,Nombre]|Q1]):-decrementer_bourse(Marchandise,Q,Q1).
+
+% ------------------------------- FIN PREDICAT DECREMENTER BOURSE --------------------------------- %
+
+% -------------------------------- PREDICAT COUP_POSSIBLE -------------------------------------------%
 
 % Algorithme coup_possible :
 % Paramètre : Plateau, Coup : coup([j1,1,sucre,riz]) (par exemple)
@@ -169,73 +210,93 @@ coup([j1,1,sucre,riz]).
 % On regarde si la marchandise a la position juste apres le trader correspond bien a la march_vendu (predicat 1) ou a la march_gardee(predicat 2).
 % On regarde si la marchandise a la position juste avant le trader correspond bien a la march_vendu (predicat 1) ou a la march_gardee(predicat 2).
 
-coup_possible([Marchandise, Bourse, PositionTrader, RJ1,RJ2], [Joueur,Deplacement,March_gardee,March_vendu]):-
-Deplacement=<3,Deplacement>=1,
-Mouvement is PositionTrader+Deplacement,
-modulo(Mouvement,10,MouvementModulo),
-MouvementApres is MouvementModulo+1,
-modulo(MouvementApres,10,MouvementModuloApres),
-MouvementAvant is MouvementModulo-1,
-modulo(MouvementAvant,10,MouvementModuloAvant),
-parcourir_marchandise(Marchandise,0,MouvementModuloApres,[_|[T|_]]),
-egalite(March_vendu,T),
-parcourir_marchandise(Marchandise,0,MouvementModuloAvant,[_|[X|_]]),!,
-egalite(March_gardee,X),!.
+% Predicat qui permet dans le cas ou la positionduTrader est egale a 0 et que du coup le MouvementAvant(=PositionTrader-1) est egale a -1, il devient egale a 8 (=dernier element).
+moins_un(X,Y):-egalite(X,-1),Y is 8,!.
+moins_un(X,X).
 
-coup_possible([Marchandise, Bourse, PositionTrader, RJ1,RJ2], [Joueur,Deplacement,March_gardee,March_vendu]):-
+coup_possible([Marchandise,_,PositionTrader,_,_], [_,Deplacement,March_gardee,March_vendu]):-
 Deplacement=<3,Deplacement>=1,
-Mouvement is PositionTrader+Deplacement,
-modulo(Mouvement,10,MouvementModulo),
-MouvementApres is MouvementModulo+1,
-modulo(MouvementApres,10,MouvementModuloApres),
-MouvementAvant is MouvementModulo-1,
-modulo(MouvementAvant,10,MouvementModuloAvant),
-parcourir_marchandise(Marchandise,0,MouvementModuloApres,[_|[T|_]]),!,
-egalite(March_gardee,T),
-parcourir_marchandise(Marchandise,0,MouvementModuloAvant,[_|[X|_]]),!,
-egalite(March_vendu,X),!.
+PositionApres is PositionTrader+Deplacement+1,
+PositionAvant is PositionTrader+Deplacement-1,
+parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,PositionApres,Marchandise,[_|[T|_]]),
+parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,PositionAvant,Marchandise,[_|[X|_]]),
+(egalite(March_gardee,X),egalite(March_vendu,T) ; egalite(March_gardee,T),egalite(March_vendu,X)),!.
+coup_possible(_,_):-write('Le coup jouer comporte une erreur'),nl,fail,!.
 
 % -------------------------------- FIN PREDICAT COUP_POSSIBLE -------------------------------------------%
 
 % -------------------------------- PREDICAT JOUER COUP -------------------------------------------%
 
-affecter_choix1(X,X,1).
-affecter_choix1(X,Y,_).
+% Algorithme jouer_coup
+% Paramètre : Le plateau, le coup, Le nouveau PLateau
+% On test d'abord si le coup est possible
+% On calcul la nouvelle Position du Trader
+% On supprime les marchandises gardee et vendu
+% Si joueur 1, on ajoute la marchandise a la reserve du joueur 1
+% Si joueur 2, on ajoute la marchandise a la reserve du joueur 2
+% On decremente ensuite la valeur de la marchandise dans la bourse
 
-affecter_choix2(X,X,2).
-affecter_choix2(X,Y,_).
 
-supprimer_element(X,[X|Q],[Q]).
-
-jouer_coup([Marchandise,Bourse,PositionTrader,RJ1,RJ2],[Joueur,Deplacement,March_gardee,March_vendu], [NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2]):-
+jouer_coup([Marchandise,Bourse,PositionTrader,RJ1,RJ2],[Joueur,Deplacement,March_gardee,March_vendu],
+[NouveauMarchandise,NouveauBourse,_,NouveauRJ1,NouveauRJ2],PositionAvant,PositionApres):-
 coup_possible([Marchandise, Bourse, PositionTrader, RJ1, RJ2],[Joueur,Deplacement,March_gardee,March_vendu]),
-PosTrader is PositionTrader+Deplacement,
-modulo(PosTrader,10,NouveauPositionTrader),
-PositionTraderApres is NouveauPositionTrader+1,
-modulo(PositionTraderApres,10,PositionTraderModuloApres),
-PositionTraderAvant is NouveauPositionTrader-1,
-modulo(PositionTraderAvant,10,PositionTraderModuloAvant),
-write("La marchandise correspondante apres le Trader est"),
-parcourir_marchandise(Marchandise,0,PositionTraderModuloApres,[T1|[X|Q1]]),
-write(X),nl,
-write("La marchandise correspondant avant le Trader est"),
-parcourir_marchandise(Marchandise,0,PositionTraderModuloAvant,[T2|[Y|Q2]]),
-write(Y),nl.
-
-%supprimer__marchandise(),
-%supprimer_marchandise(),
-%ajouter_element(X,RJ1,NouveauRJ1),
-%ajouter_element(Y,RJ2,NouveauRJ1),
-%modif_bourse(),
-%savoir si J1 ou J2.
-
-
+supprimer_marchandise(Marchandise,0,PositionAvant,ListeResultat1),
+supprimer_marchandise(ListeResultat1,0,PositionApres,NouveauMarchandise),
+(egalite(Joueur,'j1'),ajouter_element(March_gardee,RJ1,NouveauRJ1),egalite(NouveauRJ2,RJ2); egalite(Joueur,'j2'),ajouter_element(March_gardee,RJ2,NouveauRJ2),egalite(NouveauRJ1,RJ1)),
+decrementer_bourse(March_vendu,Bourse,NouveauBourse).
 
 % -------------------------------- FIN PREDICAT JOUER COUP -------------------------------------------%
 
 
+% -------------------------------- PREDICAT START JEU -------------------------------------------%s
 
+% start jeu
+% Initialise le plateau
+% choisi le premier joueur au hasard entre le joueur 1 et 2
 
+start_jeu(_):-
+plateau_depart([Marchandise,Bourse,PositionTrader,RJ1,RJ2]),
+random(1,3,X),nl,
+(egalite(X,1),egalite(Joueur,'j1') ; egalite(X,2),egalite(Joueur,'j2')),
+boucle_jeu([Marchandise,Bourse,PositionTrader,RJ1,RJ2],Joueur).
 
+boucle_jeu([Marchandise,Bourse,PositionTrader,RJ1,RJ2],Joueur):-
+longueur(Marchandise,N),
+N>2,
+afficher_plateau([Marchandise,Bourse,PositionTrader,RJ1,RJ2]),
+write('Longueur :'),write(N),nl,
+(egalite(Joueur,'j1'),write('Le joueur 1 joue'),egalite(NouveauJoueur,'j2') ; egalite(Joueur,'j2'),write('Le joueur 2 joue'),egalite(NouveauJoueur,'j1')),nl,
+write('De combien de cases voulez-vous deplacer le trader (1, 2, 3) ?'),nl,
+read(Deplacement),
+PosTrader is PositionTrader+Deplacement,
+parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,PosTrader,Marchandise,[NouveauPositionTrader|_]),
+MouvementApres is PosTrader+1,
+MouvementAvant is PosTrader-1,
+parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,MouvementApres,Marchandise,[PositionApres|[MarchApres|_]]),
+parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,MouvementAvant,Marchandise,[PositionAvant|[MarchAvant|_]]),
+write('Le Trader est maintenant a la position: '),nl,
+write(NouveauPositionTrader),nl,
+write('Quel Marchandise voulez-vous garder ?'),nl,
+write(PositionAvant),write(': '),write(MarchAvant),
+write(' ou '),
+write(PositionApres),write(': '),write(MarchApres),nl,
+read(MarchGardee),
+write('Quel Marchandise voulez-vous vendre ?'),nl,
+write(PositionAvant),write(': '),write(MarchAvant),
+write(' ou '),
+write(PositionApres),write(': '),write(MarchApres),nl,
+read(MarchVendu),
+nl,nl,nl,
+jouer_coup([Marchandise,Bourse,PositionTrader,RJ1,RJ2],[Joueur,Deplacement,MarchGardee,MarchVendu],[NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],PositionAvant,PositionApres),
+boucle_jeu([NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],NouveauJoueur).
 
-
+boucle_jeu([Marchandise,Bourse,_,RJ1,RJ2],_):-
+afficher_bourse(Bourse),nl,
+write('Reserve du joueur 1 : '),nl,
+afficher_joueur1(RJ1),nl,
+write('Reserve du joueur 2 : '),nl,
+afficher_joueur2(RJ2),nl,
+write('********************************'),nl,
+write('La partie est fini'),nl,
+write('Comptez vos points en fonction des matieres possedées et de leur valeur en bourse'),nl,
+write('Celui qui a le plus de point gagne').
