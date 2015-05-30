@@ -301,7 +301,11 @@ write('********************************'),nl,
 write('La partie est fini'),nl,
 write('Comptez vos points en fonction des matieres possedées et de leur valeur en bourse'),nl,
 write('Celui qui a le plus de point gagne').
-=======
+
+
+% -------------------------------- PREDICAT COUP_POSSIBLES -------------------------------------------%
+
+
 long(0, []).
 long(Long, [_|Q]):-long(Long2, Q), Long is Long2 + 1.
 
@@ -318,6 +322,7 @@ concatanate([T|Q], L, [T|R]):-concatanate(Q,L,R).
     le joueur gardera la ressource située sur le tas de gauche et vendra celle située sur le tas
     de droite, ou il fera l'inverse.
 */
+
 coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
     long(L,H) ,
     T1 is T + 1 ,
@@ -358,4 +363,4 @@ coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
     concatanate(ListeCoupsPossibles10,[[joueur1, 3, TD3, TG3]],ListeCoupsPossibles11),
     concatanate(ListeCoupsPossibles11,[[joueur2, 3, TD3, TG3]],ListeCoupsPossibles), writeln(ListeCoupsPossibles).
 
->>>>>>> origin/master
+% -------------------------------- FIN PREDICAT COUP_POSSIBLES -------------------------------------------%
