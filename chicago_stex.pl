@@ -233,9 +233,59 @@ write(Y),nl.
 
 % -------------------------------- FIN PREDICAT JOUER COUP -------------------------------------------%
 
+long(0, []).
+long(Long, [_|Q]):-long(Long2, Q), Long is Long2 + 1.
+
+concatanate([],L,L).
+concatanate([T|Q], L, [T|R]):-concatanate(Q,L,R).
 
 
-
-
-
+/*
+    Algorithme coups possibles:
+    Parametres: Plateau
+    Retour: Liste des Coups possibles.
+    
+    A chaque tour, le joueur peut se déplacer de 1,2 ou 3 cases. En fonction de son déplacement
+    le joueur gardera la ressource située sur le tas de gauche et vendra celle située sur le tas
+    de droite, ou il fera l'inverse.
+*/
+coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
+    long(L,H) ,
+    T1 is T + 1 ,
+    L1 is L + 1,
+    modulo(T1,L1,MouvementModulo),
+    MouvementApres is MouvementModulo+1,
+    modulo(MouvementApres,L1,MouvementModuloApres),
+    MouvementAvant is MouvementModulo-1,
+    modulo(MouvementAvant,L1,MouvementModuloAvant),
+    parcourir_marchandise(H,0, MouvementModuloAvant, [_|[TG|_]]),
+    parcourir_marchandise(H,0, MouvementModuloApres, [_|[TD|_]]),
+    concatanate([],[[joueur1, T1, TG, TD]],ListeCoupsPossibles1),
+    concatanate(ListeCoupsPossibles1,[[joueur2, 1, TG, TD]],ListeCoupsPossibles2),
+    concatanate(ListeCoupsPossibles2,[[joueur1, 1, TD, TG]],ListeCoupsPossibles3),
+    concatanate(ListeCoupsPossibles3,[[joueur2, 1, TD, TG]],ListeCoupsPossibles4),
+    T2 is T + 2,
+    modulo(T2,L1,MouvementModulo2),
+    MouvementApres2 is MouvementModulo2+1,
+    modulo(MouvementApres2,L1,MouvementModuloApres2),
+    MouvementAvant2 is MouvementModulo2-1,
+    modulo(MouvementAvant2,L1,MouvementModuloAvant2),
+    parcourir_marchandise(H,0, MouvementModuloAvant2, [_|[TG2|_]]),
+    parcourir_marchandise(H,0, MouvementModuloApres2, [_|[TD2|_]]),
+    concatanate(ListeCoupsPossibles4,[[joueur1, 2, TG2, TD2]],ListeCoupsPossibles5),
+    concatanate(ListeCoupsPossibles5,[[joueur2, 2, TG2, TD2]],ListeCoupsPossibles6),
+    concatanate(ListeCoupsPossibles6,[[joueur1, 2, TD2, TG2]],ListeCoupsPossibles7),
+    concatanate(ListeCoupsPossibles7,[[joueur2, 2, TD2, TG2]],ListeCoupsPossibles8),
+    T3 is T + 3,
+    modulo(T3,L1,MouvementModulo3),
+    MouvementApres3 is MouvementModulo3+1,
+    modulo(MouvementApres3,L1,MouvementModuloApres3),
+    MouvementAvant3 is MouvementModulo3-1,
+    modulo(MouvementAvant3,L1,MouvementModuloAvant3),
+    parcourir_marchandise(H,0, MouvementModuloAvant3, [_|[TG3|_]]),
+    parcourir_marchandise(H,0, MouvementModuloApres3, [_|[TD3|_]]),
+    concatanate(ListeCoupsPossibles8,[[joueur1, 3, TG3, TD3]],ListeCoupsPossibles9),
+    concatanate(ListeCoupsPossibles9,[[joueur2, 3, TG3, TD3]],ListeCoupsPossibles10),
+    concatanate(ListeCoupsPossibles10,[[joueur1, 3, TD3, TG3]],ListeCoupsPossibles11),
+    concatanate(ListeCoupsPossibles11,[[joueur2, 3, TD3, TG3]],ListeCoupsPossibles), writeln(ListeCoupsPossibles).
 
