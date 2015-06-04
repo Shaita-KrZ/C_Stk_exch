@@ -247,7 +247,6 @@ decrementer_bourse(March_vendu,Bourse,NouveauBourse).
 
 % -------------------------------- FIN PREDICAT JOUER COUP -------------------------------------------%
 
-<<<<<<< HEAD
 
 % -------------------------------- PREDICAT START JEU -------------------------------------------%s
 
@@ -305,7 +304,7 @@ write('Celui qui a le plus de point gagne').
 
 % -------------------------------- PREDICAT COUP_POSSIBLES -------------------------------------------%
 
-
+/*
 long(0, []).
 long(Long, [_|Q]):-long(Long2, Q), Long is Long2 + 1.
 
@@ -313,7 +312,7 @@ concatanate([],L,L).
 concatanate([T|Q], L, [T|R]):-concatanate(Q,L,R).
 
 
-/*
+
     Algorithme coups possibles:
     Parametres: Plateau
     Retour: Liste des Coups possibles.
@@ -321,7 +320,7 @@ concatanate([T|Q], L, [T|R]):-concatanate(Q,L,R).
     A chaque tour, le joueur peut se déplacer de 1,2 ou 3 cases. En fonction de son déplacement
     le joueur gardera la ressource située sur le tas de gauche et vendra celle située sur le tas
     de droite, ou il fera l'inverse.
-*/
+
 
 coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
     long(L,H) ,
@@ -362,5 +361,5 @@ coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
     concatanate(ListeCoupsPossibles9,[[joueur2, 3, TG3, TD3]],ListeCoupsPossibles10),
     concatanate(ListeCoupsPossibles10,[[joueur1, 3, TD3, TG3]],ListeCoupsPossibles11),
     concatanate(ListeCoupsPossibles11,[[joueur2, 3, TD3, TG3]],ListeCoupsPossibles), writeln(ListeCoupsPossibles).
-
+*/
 % -------------------------------- FIN PREDICAT COUP_POSSIBLES -------------------------------------------%
