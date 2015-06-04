@@ -166,8 +166,8 @@ parcourir_marchandise_sautantvide2([T|_],PositionXdeb,PositionX,_,Tas):-Position
 parcourir_marchandise_sautantvide2([],PositionXdeb,PositionX,Marchandise,Tas):-parcourir_marchandise_sautantvide2(Marchandise,PositionXdeb,PositionX,Marchandise,Tas).
 
 
-%parcourir_marchandise([_|Q],PositionDebut,PositionX,Tas):-PositionDebut<PositionX,Position1 is PositionDebut+1,parcourir_marchandise(Q,Position1,PositionX,Tas).%
-%parcourir_marchandise([T|_],PositionDebut,PositionX,Tas):-PositionDebut>=PositionX,affecter_liste(Tas,T).
+parcourir_marchandise([_|Q],PositionDebut,PositionX,Tas):-PositionDebut<PositionX,Position1 is PositionDebut+1,parcourir_marchandise(Q,Position1,PositionX,Tas).%
+parcourir_marchandise([T|_],PositionDebut,PositionX,Tas):-PositionDebut>=PositionX,affecter_liste(Tas,T).
 
 % -------------------------------- FIN PREDICAT PARCOURIR MARCHANDISE -------------------------------------------%
 
@@ -247,6 +247,62 @@ decrementer_bourse(March_vendu,Bourse,NouveauBourse).
 
 % -------------------------------- FIN PREDICAT JOUER COUP -------------------------------------------%
 
+<<<<<<< HEAD
+=======
+% -------------------------------- PREDICAT START JEU -------------------------------------------%s
+
+% start jeu
+% Initialise le plateau
+% choisi le premier joueur au hasard entre le joueur 1 et 2
+
+start_jeu(_):-
+plateau_depart([Marchandise,Bourse,PositionTrader,RJ1,RJ2]),
+random(1,3,X),nl,
+(egalite(X,1),egalite(Joueur,'j1') ; egalite(X,2),egalite(Joueur,'j2')),
+boucle_jeu([Marchandise,Bourse,PositionTrader,RJ1,RJ2],Joueur).
+
+boucle_jeu([Marchandise,Bourse,PositionTrader,RJ1,RJ2],Joueur):-
+longueur(Marchandise,N),
+N>2,
+afficher_plateau([Marchandise,Bourse,PositionTrader,RJ1,RJ2]),
+write('Longueur :'),write(N),nl,
+(egalite(Joueur,'j1'),write('Le joueur 1 joue'),egalite(NouveauJoueur,'j2') ; egalite(Joueur,'j2'),write('Le joueur 2 joue'),egalite(NouveauJoueur,'j1')),nl,
+write('De combien de cases voulez-vous deplacer le trader (1, 2, 3) ?'),nl,
+read(Deplacement),
+PosTrader is PositionTrader+Deplacement,
+parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,PosTrader,Marchandise,[NouveauPositionTrader|_]),
+MouvementApres is PosTrader+1,
+MouvementAvant is PosTrader-1,
+parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,MouvementApres,Marchandise,[PositionApres|[MarchApres|_]]),
+parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,MouvementAvant,Marchandise,[PositionAvant|[MarchAvant|_]]),
+write('Le Trader est maintenant a la position: '),nl,
+write(NouveauPositionTrader),nl,
+write('Quel Marchandise voulez-vous garder ?'),nl,
+write(PositionAvant),write(': '),write(MarchAvant),
+write(' ou '),
+write(PositionApres),write(': '),write(MarchApres),nl,
+read(MarchGardee),
+write('Quel Marchandise voulez-vous vendre ?'),nl,
+write(PositionAvant),write(': '),write(MarchAvant),
+write(' ou '),
+write(PositionApres),write(': '),write(MarchApres),nl,
+read(MarchVendu),
+nl,nl,nl,
+jouer_coup([Marchandise,Bourse,PositionTrader,RJ1,RJ2],[Joueur,Deplacement,MarchGardee,MarchVendu],[NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],PositionAvant,PositionApres),
+boucle_jeu([NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],NouveauJoueur).
+
+boucle_jeu([Marchandise,Bourse,_,RJ1,RJ2],_):-
+afficher_bourse(Bourse),nl,
+write('Reserve du joueur 1 : '),nl,
+afficher_joueur1(RJ1),nl,
+write('Reserve du joueur 2 : '),nl,
+afficher_joueur2(RJ2),nl,
+write('********************************'),nl,
+write('La partie est fini'),nl,
+write('Comptez vos points en fonction des matieres possedées et de leur valeur en bourse'),nl,
+write('Celui qui a le plus de point gagne').
+
+>>>>>>> 926a94dcb36fe3014d90c25a7549ffaff7a214ed
 
 % -------------------------------- PREDICAT COUPS POSSIBLES -------------------------------------------%
 /*
@@ -328,11 +384,18 @@ coups_possibles([H, _, T, _, _],ListeCoupsPossibles):-
         Retour de ce coup.
 */
 
+
+
+
 meilleur_coup([B, H, T, J1, J2], [Joueur, Depl, Garde, Jette]):-
      coups_possibles([B, H, T, J1, J2],ListeCoupsPossibles),
      (
         egalite(Joueur,'j1'),
+<<<<<<< HEAD
         tester_coupsJ1([B,H,T,J1,J2],ListeCoupsPossibles,Res)
+=======
+        tester_coupsJ1([B,H,T,J1,J2],ListeCoupsPossibles, Res)
+>>>>>>> 926a94dcb36fe3014d90c25a7549ffaff7a214ed
      ; 
         egalite(Joueur,'j2'),
         reverse(ListeCoupsPossibles, Tmp),
@@ -403,7 +466,10 @@ nieme_element(T,[_|L],N) :- nieme_element(T,L,N1), N is N1 +1.
     et retourne une liste contenant les valeurs respectives des
     évaluations de chacun des coups.
 */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 926a94dcb36fe3014d90c25a7549ffaff7a214ed
 tester_coupsJ1([H,B,T,J1,J2],[],[]).
 tester_coupsJ1([H,B,T,J1,J2],[[J,D,G,Je]|Q],[R|Reste]):-    
     evaluer_coupJ1([H, B, T, J1, J2],[J, D, G, Je], R), 
@@ -418,6 +484,7 @@ tester_coupsJ2([H,B,T,J1,J2],[[J,D,G,Je]|Q],[R|Reste]):-
      
 % -------------------------------- FIN PREDICAT MEILLEUR COUP -------------------------------------------%
 
+<<<<<<< HEAD
 % -------------------------------- PREDICAT START JEU -------------------------------------------%
 
 % start jeu
@@ -439,12 +506,29 @@ read(Mode),
 ;egalite(Mode,3),write('Pas encore disponible')
 ).
 
+=======
+
+jeuIA(_):- 
+    plateau_depart([Marchandise,Bourse,PositionTrader,RJ1,RJ2]),
+    random(1,3,X),nl,
+    (egalite(X,1),egalite(Joueur,'j1') ; egalite(X,2),egalite(Joueur,'j2')),
+    boucle_jeuIA([Marchandise,Bourse,PositionTrader,RJ1,RJ2],Joueur).
+    
+    
+>>>>>>> 926a94dcb36fe3014d90c25a7549ffaff7a214ed
 boucle_jeuIA([Marchandise,Bourse,PositionTrader,RJ1,RJ2],Joueur):-
     longueur(Marchandise,N),
     N>2,
     afficher_plateau([Marchandise,Bourse,PositionTrader,RJ1,RJ2]),
+<<<<<<< HEAD
     write('Longueur :'),write(N),nl,   
    (     
+=======
+    write('Longueur :'),write(N),nl,
+    
+   (
+        
+>>>>>>> 926a94dcb36fe3014d90c25a7549ffaff7a214ed
         egalite(Joueur,'j1'),
         write('L\'IA joue'),
         egalite(NouveauJoueur,'j2'),
@@ -456,10 +540,18 @@ boucle_jeuIA([Marchandise,Bourse,PositionTrader,RJ1,RJ2],Joueur):-
         parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,MouvementApres,Marchandise,[PositionApres|[MarchApres|_]]),
         parcourir_marchandise_sautantvide(Marchandise,0,PositionTrader,MouvementAvant,Marchandise,[PositionAvant|[MarchAvant|_]]),
         jouer_coup([Marchandise,Bourse,PositionTrader,RJ1,RJ2],[Joueur,Depl,MarchGardee,MarchVendu],     
+<<<<<<< HEAD
             [NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],PositionAvant,PositionApres)   
    ; 
         egalite(Joueur,'j2'),
         write('Vous jouez'),nl,
+=======
+            [NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],PositionAvant,PositionApres)
+        
+   ; 
+        egalite(Joueur,'j2'),
+        write('Vous jouez'),
+>>>>>>> 926a94dcb36fe3014d90c25a7549ffaff7a214ed
         egalite(NouveauJoueur,'j1'),
         write('De combien de cases voulez-vous deplacer le trader (1, 2, 3) ?'),nl,
         read(Deplacement),
@@ -484,9 +576,16 @@ boucle_jeuIA([Marchandise,Bourse,PositionTrader,RJ1,RJ2],Joueur):-
         nl,nl,nl,
         jouer_coup([Marchandise,Bourse,PositionTrader,RJ1,RJ2],[Joueur,Deplacement,MarchGardee,MarchVendu],     
             [NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],PositionAvant,PositionApres)
+<<<<<<< HEAD
    ),nl,boucle_jeuIA([NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],NouveauJoueur).
 
    
+=======
+   ),nl,
+    
+    boucle_jeuIA([NouveauMarchandise,NouveauBourse,NouveauPositionTrader,NouveauRJ1,NouveauRJ2],NouveauJoueur).
+
+>>>>>>> 926a94dcb36fe3014d90c25a7549ffaff7a214ed
 boucle_jeuIA([Marchandise,Bourse,_,RJ1,RJ2],_):-
     afficher_bourse(Bourse),nl,
     write('Reserve du joueur 1 : '),nl,
@@ -497,6 +596,7 @@ boucle_jeuIA([Marchandise,Bourse,_,RJ1,RJ2],_):-
     write('La partie est fini'),nl,
     write('Comptez vos points en fonction des matieres possedées et de leur valeur en bourse'),nl,
     write('Celui qui a le plus de point gagne').
+<<<<<<< HEAD
 
 
 
@@ -541,3 +641,7 @@ write('********************************'),nl,
 write('La partie est fini'),nl,
 write('Comptez vos points en fonction des matieres possedées et de leur valeur en bourse'),nl,
 write('Celui qui a le plus de point gagne').
+=======
+    
+
+>>>>>>> 926a94dcb36fe3014d90c25a7549ffaff7a214ed
