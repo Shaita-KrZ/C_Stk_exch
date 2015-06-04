@@ -303,25 +303,34 @@ write('Comptez vos points en fonction des matieres possedées et de leur valeur 
 write('Celui qui a le plus de point gagne').
 
 
-% -------------------------------- PREDICAT COUP_POSSIBLES -------------------------------------------%
-
+% -------------------------------- PREDICAT COUPS POSSIBLES -------------------------------------------%
+/*
+    Prédicat coups possibles:
+    Parametres: Plateau
+    Retour: Liste des Coups possibles.
+    L'algorithme coups possible liste l'ensemble des coups possible à partir d'une situation donnée.
+    Il s'agit de la concaténation de tous les déplacements et actions possibles en une seule et même liste.
+    
+    A chaque tour, le joueur peut se déplacer de 1,2 ou 3 cases. En fonction de son déplacement
+    le joueur gardera la ressource située sur le tas de gauche et vendra celle située sur le tas
+    de droite, ou il fera l'inverse.
+    
+    Algorithme:
+        Récupération du nombre de tas
+        Simulation d'un déplacement de valeur 1
+        concatenation des différentes actions possibles pour le j1 et le j2
+        Simulation d'un déplacement de valeur 2
+        concatenation des différentes actions possibles pour le j1 et le j2
+        Simulation d'un déplacement de valeur 3
+        concatenation des différentes actions possibles pour le j1 et le j2
+        Retour de la liste issue des différentes concatenations.
+*/
 
 long(0, []).
 long(Long, [_|Q]):-long(Long2, Q), Long is Long2 + 1.
 
 concatanate([],L,L).
 concatanate([T|Q], L, [T|R]):-concatanate(Q,L,R).
-
-
-/*
-    Algorithme coups possibles:
-    Parametres: Plateau
-    Retour: Liste des Coups possibles.
-    
-    A chaque tour, le joueur peut se déplacer de 1,2 ou 3 cases. En fonction de son déplacement
-    le joueur gardera la ressource située sur le tas de gauche et vendra celle située sur le tas
-    de droite, ou il fera l'inverse.
-*/
 
 coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
     long(L,H) ,
@@ -334,10 +343,10 @@ coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
     modulo(MouvementAvant,L1,MouvementModuloAvant),
     parcourir_marchandise(H,0, MouvementModuloAvant, [_|[TG|_]]),
     parcourir_marchandise(H,0, MouvementModuloApres, [_|[TD|_]]),
-    concatanate([],[[joueur1, T1, TG, TD]],ListeCoupsPossibles1),
-    concatanate(ListeCoupsPossibles1,[[joueur2, 1, TG, TD]],ListeCoupsPossibles2),
-    concatanate(ListeCoupsPossibles2,[[joueur1, 1, TD, TG]],ListeCoupsPossibles3),
-    concatanate(ListeCoupsPossibles3,[[joueur2, 1, TD, TG]],ListeCoupsPossibles4),
+    concatanate([],[[j1, 1, TG, TD]],ListeCoupsPossibles1),
+    concatanate(ListeCoupsPossibles1,[[j2, 1, TG, TD]],ListeCoupsPossibles2),
+    concatanate(ListeCoupsPossibles2,[[j1, 1, TD, TG]],ListeCoupsPossibles3),
+    concatanate(ListeCoupsPossibles3,[[j2, 1, TD, TG]],ListeCoupsPossibles4),
     T2 is T + 2,
     modulo(T2,L1,MouvementModulo2),
     MouvementApres2 is MouvementModulo2+1,
@@ -346,10 +355,10 @@ coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
     modulo(MouvementAvant2,L1,MouvementModuloAvant2),
     parcourir_marchandise(H,0, MouvementModuloAvant2, [_|[TG2|_]]),
     parcourir_marchandise(H,0, MouvementModuloApres2, [_|[TD2|_]]),
-    concatanate(ListeCoupsPossibles4,[[joueur1, 2, TG2, TD2]],ListeCoupsPossibles5),
-    concatanate(ListeCoupsPossibles5,[[joueur2, 2, TG2, TD2]],ListeCoupsPossibles6),
-    concatanate(ListeCoupsPossibles6,[[joueur1, 2, TD2, TG2]],ListeCoupsPossibles7),
-    concatanate(ListeCoupsPossibles7,[[joueur2, 2, TD2, TG2]],ListeCoupsPossibles8),
+    concatanate(ListeCoupsPossibles4,[[j1, 2, TG2, TD2]],ListeCoupsPossibles5),
+    concatanate(ListeCoupsPossibles5,[[j2, 2, TG2, TD2]],ListeCoupsPossibles6),
+    concatanate(ListeCoupsPossibles6,[[j1, 2, TD2, TG2]],ListeCoupsPossibles7),
+    concatanate(ListeCoupsPossibles7,[[j2, 2, TD2, TG2]],ListeCoupsPossibles8),
     T3 is T + 3,
     modulo(T3,L1,MouvementModulo3),
     MouvementApres3 is MouvementModulo3+1,
@@ -358,9 +367,107 @@ coups_possibles([H, B, T, J1, J2],ListeCoupsPossibles):-
     modulo(MouvementAvant3,L1,MouvementModuloAvant3),
     parcourir_marchandise(H,0, MouvementModuloAvant3, [_|[TG3|_]]),
     parcourir_marchandise(H,0, MouvementModuloApres3, [_|[TD3|_]]),
-    concatanate(ListeCoupsPossibles8,[[joueur1, 3, TG3, TD3]],ListeCoupsPossibles9),
-    concatanate(ListeCoupsPossibles9,[[joueur2, 3, TG3, TD3]],ListeCoupsPossibles10),
-    concatanate(ListeCoupsPossibles10,[[joueur1, 3, TD3, TG3]],ListeCoupsPossibles11),
-    concatanate(ListeCoupsPossibles11,[[joueur2, 3, TD3, TG3]],ListeCoupsPossibles), writeln(ListeCoupsPossibles).
+    concatanate(ListeCoupsPossibles8,[[j1, 3, TG3, TD3]],ListeCoupsPossibles9),
+    concatanate(ListeCoupsPossibles9,[[j2, 3, TG3, TD3]],ListeCoupsPossibles10),
+    concatanate(ListeCoupsPossibles10,[[j1, 3, TD3, TG3]],ListeCoupsPossibles11),
+    concatanate(ListeCoupsPossibles11,[[j2, 3, TD3, TG3]],ListeCoupsPossibles), writeln(ListeCoupsPossibles).
 
-% -------------------------------- FIN PREDICAT COUP_POSSIBLES -------------------------------------------%
+
+% -------------------------------- FIN PREDICAT COUPS POSSIBLES -------------------------------------------%
+
+% -------------------------------- PREDICAT MEILLEUR COUP -------------------------------------------%
+/* 
+    Prédicat meilleur coup:
+        Paramètres: le plateau courant
+        Retour: un coup choisi comme étant le meilleur
+        
+    Pour ce prédicat, on simule chacun des coups possibles.
+    On évaluer ensuite chaque coup possible: la valeur d'un coup est le nombre de points du joueur 
+    courant moins le nombre de point de son adversaire après simulation du coup. Le coup d'évaluation
+    maximum est le coup qui fera le plus avancer le joueur courant par rapport à son adversaire.
+    Ce coup d'évaluation maximum est considéré comme le meilleur coup.
+    
+    Algorithme:
+        Recherche de l'ensemble des coups possibles.
+        Teste (évaluation) de chacun des coups, obtention d'un tableau de valeur contenant les évaluations
+        Recherche de l'évaluation maximum
+        Recherche du premier coup ayant cette évaluation maximum
+        Retour de ce coup.
+*/
+
+meilleur_coup([B, H, T, J1, J2], [Joueur, Depl, Garde, Jette]):-
+     coups_possibles([B, H, T, J1, J2],ListeCoupsPossibles),
+     tester_coups([B,H,T,J1,J2],ListeCoupsPossibles, Res),
+     max(Res,X),
+     nieme_element(X,Res,N),
+     nieme_element([Joueur, Depl, Garde, Jette],ListeCoupsPossibles,N).
+
+% ------- PRÉDICATS UTILITAIRES ------------%
+
+
+/* obtenir_prix permet d'obtenir le prix d'une ressource dans la bourse */
+obtenir_prix(Res, [], 0):-!,false.
+obtenir_prix(Res, [[Res, Prix]|Q], Prix).
+obtenir_prix(Res, [[_, _]|Q], Prix):-obtenir_prix(Res, Q, Prix).
+
+/* evaluer_reserve permet de connaitre le nombre de point d'un joueur à l'issue d'un tour
+  en fonction de la ressource vendue pendant le tour et de la bourse.
+  La réserve du joueur courant est simulée ainsi que la valeur de 
+  la valeur de la bourse après le coup.
+  Le score d'un joueur est la somme des ressources qu'il a en réserve en fonction 
+  de leur valeur en bourse.
+*/
+evaluer_reserve(B, [],Jette, 0).
+evaluer_reserve(B,[Jette|Q],Jette, Score):-
+    obtenir_prix(Jette,B, PrixJ), 
+    PrixJF is PrixJ - 1,
+    evaluer_reserve(B, Q,Jette, Score2), 
+    Score is Score2 + PrixJF.
+evaluer_reserve(B, [R|Q],Jette, Score):-
+    evaluer_reserve(B, Q, Jette,Score2),
+    obtenir_prix(R, B, Prix),    
+    Score is Score2 + Prix.
+
+/* evaluer_coupJ1 permet de donner une valeur à un coup joué par le j1 
+   en fonction d'un plateau donnée.
+   L'évaluation vaut Score_j1 - Score_j2.
+*/
+evaluer_coupJ1([H, B, T, J1, J2],[Joueur, Depl, Garde, Jette], Resultat):- 
+    concatanate(J1,[Garde], NewReserve),
+    evaluer_reserve(B, NewReserve, Jette, ScoreJ1),
+    evaluer_reserve(B, J2, Jette, ScoreJ2),
+    Resultat is ScoreJ1 - ScoreJ2.
+/* evaluer_coupJ2 permet de donner une valeur à un coup joué par le j2
+   en fonction d'un plateau donnée
+   L'évaluation vaut Score_j2 - Score_j1.
+*/ 
+evaluer_coupJ2([H, B, T, J1, J2],[Joueur, Depl, Garde, Jette], Resultat):- 
+    concatanate(J2,[Garde], NewReserve),
+    evaluer_reserve(B, NewReserve, Jette, ScoreJ2),
+    evaluer_reserve(B, J1, Jette, ScoreJ1),
+    Resultat is ScoreJ2 - ScoreJ1.
+    
+/* max retourne la valeur maximum dans une liste*/
+max([X], X):-!.
+max([T|Q], M) :- max(Q,M), M >= T.
+max([T|Q], T) :- max(Q,M), T > M.
+
+/*
+   nieme_element permet de connaitre la valeur d'une n-ième élément.
+*/
+nieme_element(T,[T|_],1).
+nieme_element(T,[_|L],N) :- nieme_element(T,L,N1), N is N1 + 1.
+
+/*
+    tester_coup permet d'évaluer un ensemble de coups d'une liste
+    et retourne une liste contenant les valeurs respectives des
+    évaluations de chacun des coups.
+*/
+tester_coups([H,B,T,J1,J2],[],[]).
+tester_coups([H,B,T,J1,J2],[[J,D,G,Je]|Q],[R|Reste]):-    
+    evaluer_coupJ1([H, B, T, J1, J2],[J, D, G, Je], R), 
+    tester_coups([H, B, T, J1, J2],Q, Reste).
+    
+% ------- FIN PRÉDICATS UTILITAIRES ------------%
+     
+% -------------------------------- FIN PREDICAT MEILLEUR COUP -------------------------------------------%
